@@ -7,14 +7,17 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ChevronDown, ChevronRight, Loader2, Sparkles, Eye, EyeOff, Key } from "lucide-react"
-
+interface element {
+  key: string
+  value: string
+}
 interface ProjectGuide {
-  projectAnalysis: string
-  recommendedStack: string
-  initialSetupSteps: string
-  projectStructure: string
-  implementationStrategy: string
-  resources: string
+  projectAnalysis: Array<element>
+  recommendedStack: Array<element>
+  initialSetupSteps: Array<element>
+  projectStructure: Array<element>
+  implementationStrategy: Array<element>
+  resources: Array<element>
 }
 
 export default function ProjectGuide() {
@@ -25,13 +28,11 @@ export default function ProjectGuide() {
     additionalRequirements: "",
     technicalLevel: "",
     preferredTechStack: "",
-    apiKey: "",
   })
 
   const [guide, setGuide] = useState<ProjectGuide | null>(null)
   const [loading, setLoading] = useState(false)
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set())
-  const [showApiKey, setShowApiKey] = useState(false)
   const [error, setError] = useState<string>("")
 
   const handleInputChange = (field: string, value: string) => {
@@ -54,11 +55,6 @@ export default function ProjectGuide() {
   const generateGuide = async () => {
     if (!formData.projectIdea.trim()) {
       setError("Please provide your project idea")
-      return
-    }
-
-    if (!formData.apiKey.trim()) {
-      setError("Please provide your OpenAI API key")
       return
     }
 
@@ -117,41 +113,6 @@ export default function ProjectGuide() {
               <CardTitle className="text-pink-400 text-xl">Project Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* API Key Field */}
-              <div>
-                <label className="block text-purple-300 font-medium mb-2 flex items-center gap-2">
-                  <Key className="h-4 w-4" />
-                  OpenAI API Key (Required)
-                </label>
-                <div className="relative">
-                  <Input
-                    type={showApiKey ? "text" : "password"}
-                    placeholder="sk-..."
-                    value={formData.apiKey}
-                    onChange={(e) => handleInputChange("apiKey", e.target.value)}
-                    className="bg-black/30 border-purple-400/50 text-white placeholder-gray-400 focus:border-pink-400 pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowApiKey(!showApiKey)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
-                  >
-                    {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-                <p className="text-xs text-gray-400 mt-1">
-                  Get your API key from{" "}
-                  <a
-                    href="https://platform.openai.com/api-keys"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-pink-400 hover:text-pink-300 underline"
-                  >
-                    OpenAI Platform
-                  </a>
-                </p>
-              </div>
-
               <div>
                 <label className="block text-purple-300 font-medium mb-2">Project Idea (Required)</label>
                 <Textarea
@@ -237,7 +198,7 @@ export default function ProjectGuide() {
 
               <Button
                 onClick={generateGuide}
-                disabled={loading || !formData.projectIdea.trim() || !formData.apiKey.trim()}
+                disabled={loading || !formData.projectIdea.trim() || !formData.technicalLevel}
                 className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-semibold py-3"
               >
                 {loading ? (
@@ -255,7 +216,7 @@ export default function ProjectGuide() {
             </CardContent>
           </Card>
 
-          {/* Results */}
+
           <div className="space-y-4">
             {guide ? (
               <>
@@ -281,7 +242,12 @@ export default function ProjectGuide() {
                     {expandedSections.has(section.key) && (
                       <CardContent>
                         <div className="text-gray-300 whitespace-pre-wrap leading-relaxed">
-                          {guide[section.key as keyof ProjectGuide]}
+                          {guide[section.key as keyof ProjectGuide].map((item, index) => (
+                            <div key={index} className="mb-3">
+                              <p className="font-semibold text-white text-lg">{item["key"]}</p>
+                              <p className="text-pink-400">{item["value"]}</p>
+                            </div>
+                          ))}
                         </div>
                       </CardContent>
                     )}

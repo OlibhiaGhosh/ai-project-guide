@@ -1,7 +1,7 @@
-import { createOpenAI } from "@ai-sdk/openai"
-import { generateText } from "ai"
+import { parseJSON } from "date-fns";
 
-
+const OpenAI = require("openai");
+require("dotenv").config();
 export async function POST(req: Request) {
   try {
     const {
@@ -11,18 +11,28 @@ export async function POST(req: Request) {
       additionalRequirements,
       technicalLevel,
       preferredTechStack,
-      apiKey,
-    } = await req.json()
+    } = await req.json();
 
-    // Validate API key
-    if (!apiKey || !apiKey.trim()) {
-      return Response.json({ error: "OpenAI API key is required" }, { status: 400 })
+    if (!process.env.NEBIUS_API_KEY) {
+      return Response.json(
+        { error: "NEBIUS_API_KEY is not set" },
+        { status: 500 }
+      );
     }
-
-    // Create OpenAI instance with user-provided API key
-    const openai = createOpenAI({
-      apiKey: apiKey.trim(),
-    })
+    if (
+      !projectIdea ||
+      !applicationType ||
+      !developmentType ||
+      !technicalLevel
+    ) {
+      return Response.json(
+        {
+          error:
+            "Project idea, application type, development type, and technical level are required",
+        },
+        { status: 400 }
+      );
+    }
 
     const prompt = `
     Generate a comprehensive project guide for the following project:
@@ -34,7 +44,7 @@ export async function POST(req: Request) {
     Technical Level: ${technicalLevel}
     Preferred Tech Stack: ${preferredTechStack}
 
-    Please provide a detailed response in the following JSON format:
+    Please provide a detailed response in the following JSON format without any extra word outside this format. Just give the JSON response without any explanation or additional text. Also remove any extra markdown formatting:
     {
       "projectAnalysis": "Detailed analysis of the project idea, its feasibility, target audience, and key features",
       "recommendedStack": "Recommended technology stack with explanations for each choice",
@@ -43,49 +53,48 @@ export async function POST(req: Request) {
       "implementationStrategy": "Phase-by-phase implementation approach with priorities",
       "resources": "Useful resources, tutorials, documentation, and tools"
     }
+    Inside every section in response provide detailed info in array format. For example, for the 'projectAnalysis' section, provide an array of element of structure element {
+  key: string
+  value: string
+} where each element has a detailed point or explanation in value section.
 
     Make sure each section is comprehensive and tailored to the user's technical level and requirements.
-    `
+    Also give code examples where applicable, especially in the 'initialSetupSteps' and 'implementationStrategy' sections.
+    Ensure the response is well-structured and easy to follow.
+    The response should be in JSON format only, without any additional text or markdown formatting.
+    `;
+    const client = new OpenAI({
+      baseURL: "https://api.studio.nebius.com/v1/",
+      apiKey: process.env.NEBIUS_API_KEY,
+    });
 
-    const { text } = await generateText({
-      model: openai("gpt-4o"),
-      prompt,
-      temperature: 0.7,
-    })
-
-    // Try to parse the JSON response
-    let parsedResponse
+    let completion = await client.chat.completions.create({
+      temperature: 0.6,
+      model: "meta-llama/Meta-Llama-3.1-70B-Instruct",
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+    });
+    console.log(completion);
     try {
-      parsedResponse = JSON.parse(text)
+      const result = await JSON.parse(completion.choices[0].message.content);
+      console.log("Parsed result:", result);
+      return Response.json(result, { status: 200 });
     } catch (parseError) {
-      // If JSON parsing fails, create a structured response
-      parsedResponse = {
-        projectAnalysis: text.substring(0, text.length / 6),
-        recommendedStack: text.substring(text.length / 6, text.length / 3),
-        initialSetupSteps: text.substring(text.length / 3, text.length / 2),
-        projectStructure: text.substring(text.length / 2, (text.length * 2) / 3),
-        implementationStrategy: text.substring((text.length * 2) / 3, (text.length * 5) / 6),
-        resources: text.substring((text.length * 5) / 6),
-      }
+      console.log("Error parsing response:", parseError);
+      return Response.json(
+        { error: "Failed to parse response from AI model." },
+        { status: 500 }
+      );
     }
-
-    return Response.json(parsedResponse)
   } catch (error) {
-    console.error("Error generating guide:", error)
-
-    // Handle specific OpenAI API errors
-    if (error instanceof Error) {
-      if (error.message.includes("401") || error.message.includes("Unauthorized")) {
-        return Response.json({ error: "Invalid API key. Please check your OpenAI API key." }, { status: 401 })
-      }
-      if (error.message.includes("429")) {
-        return Response.json({ error: "API rate limit exceeded. Please try again later." }, { status: 429 })
-      }
-      if (error.message.includes("insufficient_quota")) {
-        return Response.json({ error: "Insufficient API quota. Please check your OpenAI account." }, { status: 402 })
-      }
-    }
-
-    return Response.json({ error: "Failed to generate project guide. Please try again." }, { status: 500 })
+    console.error("Error generating guide:", error);
+    return Response.json(
+      { error: "Failed to generate project guide. Please try again." },
+      { status: 500 }
+    );
   }
 }
