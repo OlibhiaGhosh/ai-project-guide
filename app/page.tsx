@@ -85,7 +85,7 @@ export default function ProjectGuide() {
         body: JSON.stringify(formData),
       });
 
-      const { result , remaining } = await response.json();
+      const { result, remaining } = await response.json();
 
       if (!response.ok) {
         throw new Error(result.error || "Failed to generate guide");
@@ -120,11 +120,12 @@ export default function ProjectGuide() {
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white font-serif">
+    <div className=" min-h-screen bg-black text-[#F6F6F6] font-geist-mono">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-4 flex items-center justify-center gap-2">
-            <p className="text-[#e18fe3]">Project</p> <p className="text-[#b83ce8]">Guide</p> Generator
+          <h1 className="text-4xl font-bold text-[#F6F6F6] mb-4 flex items-center justify-center gap-2">
+            <p className="text-[#9af1ba]">Project</p>{" "}
+            <p className="text-[#9af1ba]">Guide</p> Generator
           </h1>
           <p className="text-gray-300 text-lg">
             Get AI-powered guidance to bring your project ideas to life
@@ -133,15 +134,17 @@ export default function ProjectGuide() {
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Input Form */}
-          <Card className="h-max bg-gradient-to-br from-black to-[#b83ce8] border-purple-500/30 backdrop-blur-sm">
+          <Card
+            className="h-max rounded-xl bg-black bg-gradient-to-r from-[#CFFFE2]/20 via-black to-[#CFFFE2]/20 backdrop-invert backdrop-opacity-10 shadow-inner inset-64 shadow-[#CFFFE2]/50 border-[#A2D5C6]"
+          >
             <CardHeader>
-              <CardTitle className="text-pink-400 text-xl">
+              <CardTitle className="text-[#c8f4d8] text-2xl ">
                 Project Details
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6" suppressHydrationWarning={true}>
               <div>
-                <label className="block text-white font-medium mb-2">
+                <label className="block text-[#F6F6F6] font-medium mb-2">
                   Project Idea (Required)
                 </label>
                 <Textarea
@@ -150,7 +153,7 @@ export default function ProjectGuide() {
                   onChange={(e) =>
                     handleInputChange("projectIdea", e.target.value)
                   }
-                  className="bg-black/30 border-purple-400/50 text-white placeholder-gray-400 focus:border-pink-400"
+                  className="bg-black/30 border-[#A2D5C6]/50 text-[#F6F6F6] placeholder-gray-400 focus:border-[#CFFFE2]"
                   rows={4}
                   suppressHydrationWarning={true}
                 />
@@ -158,7 +161,7 @@ export default function ProjectGuide() {
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-white font-medium mb-2">
+                  <label className="block text-[#F6F6F6] font-medium mb-2">
                     Application Type
                   </label>
                   <Select
@@ -166,10 +169,13 @@ export default function ProjectGuide() {
                       handleInputChange("applicationType", value)
                     }
                   >
-                    <SelectTrigger className="bg-black/30 border-purple-400/50 text-white" suppressHydrationWarning={true}>
+                    <SelectTrigger
+                      className="bg-black/30 border-[#A2D5C6]/50 focus:border-[#A2D5C6] text-[#F6F6F6]"
+                      suppressHydrationWarning={true}
+                    >
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
-                    <SelectContent className="bg-black border-purple-400/50">
+                    <SelectContent className="bg-black border-[#A2D5C6]/50 focus:border-[#A2D5C6]">
                       <SelectItem value="web">Web Application</SelectItem>
                       <SelectItem value="mobile">Mobile Application</SelectItem>
                       <SelectItem value="desktop">
@@ -181,7 +187,7 @@ export default function ProjectGuide() {
                 </div>
 
                 <div>
-                  <label className="block text-white font-medium mb-2">
+                  <label className="block text-[#F6F6F6] font-medium mb-2">
                     Development Type
                   </label>
                   <Select
@@ -189,10 +195,13 @@ export default function ProjectGuide() {
                       handleInputChange("developmentType", value)
                     }
                   >
-                    <SelectTrigger className="bg-black/30 border-purple-400/50 text-white" suppressHydrationWarning={true}>
+                    <SelectTrigger
+                      className="bg-black/30 border-[#A2D5C6]/50 text-[#F6F6F6]"
+                      suppressHydrationWarning={true}
+                    >
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
-                    <SelectContent className="bg-black border-purple-400/50">
+                    <SelectContent className="bg-black border-[#A2D5C6]/50">
                       <SelectItem value="frontend">Frontend Only</SelectItem>
                       <SelectItem value="backend">Backend Only</SelectItem>
                       <SelectItem value="fullstack">Full Stack</SelectItem>
@@ -202,7 +211,7 @@ export default function ProjectGuide() {
               </div>
 
               <div>
-                <label className="block text-purple-300 font-medium mb-2">
+                <label className="block text-[#F6F6F6] font-medium mb-2">
                   Technical Level
                 </label>
                 <Select
@@ -210,10 +219,13 @@ export default function ProjectGuide() {
                     handleInputChange("technicalLevel", value)
                   }
                 >
-                  <SelectTrigger className="bg-black/30 border-purple-400/50 text-white" suppressHydrationWarning={true}>
+                  <SelectTrigger
+                    className="bg-black/30 border-[#A2D5C6]/50 text-[#F6F6F6]"
+                    suppressHydrationWarning={true}
+                  >
                     <SelectValue placeholder="Select your level" />
                   </SelectTrigger>
-                  <SelectContent className="bg-black border-purple-400/50">
+                  <SelectContent className="bg-black border-[#A2D5C6]/50">
                     <SelectItem value="beginner">Beginner</SelectItem>
                     <SelectItem value="intermediate">Intermediate</SelectItem>
                     <SelectItem value="advanced">Advanced</SelectItem>
@@ -222,7 +234,7 @@ export default function ProjectGuide() {
               </div>
 
               <div>
-                <label className="block text-purple-300 font-medium mb-2">
+                <label className="block text-[#F6F6F6] font-medium mb-2">
                   Preferred Tech Stack (Optional)
                 </label>
                 <Input
@@ -231,13 +243,13 @@ export default function ProjectGuide() {
                   onChange={(e) =>
                     handleInputChange("preferredTechStack", e.target.value)
                   }
-                  className="bg-black/30 border-purple-400/50 text-white placeholder-gray-400 focus:border-pink-400"
+                  className="bg-black/30 border-[#A2D5C6]/50 text-[#F6F6F6] placeholder-gray-400 focus:border-[#CFFFE2]/50"
                   suppressHydrationWarning={true}
                 />
               </div>
 
               <div>
-                <label className="block text-purple-300 font-medium mb-2">
+                <label className="block text-[#F6F6F6] font-medium mb-2">
                   Additional Requirements (Optional)
                 </label>
                 <Textarea
@@ -246,7 +258,7 @@ export default function ProjectGuide() {
                   onChange={(e) =>
                     handleInputChange("additionalRequirements", e.target.value)
                   }
-                  className="bg-black/30 border-purple-400/50 text-white placeholder-gray-400 focus:border-pink-400"
+                  className="bg-black/30 border-[#A2D5C6]/50 text-[#F6F6F6] placeholder-gray-400 focus:border-[#CFFFE2]/50"
                   rows={3}
                   suppressHydrationWarning={true}
                 />
@@ -265,7 +277,7 @@ export default function ProjectGuide() {
                   !formData.projectIdea.trim() ||
                   !formData.technicalLevel
                 }
-                className="w-full bg-gradient-to-r from-pink-300 to-pink-400 hover:from-pink-600 hover:to-purple-700 text-blue-950 font-semibold py-3"
+                className="w-full bg-[#89ffdc] hover:bg-[#CFFFE2] text-black font-semibold py-3"
               >
                 {loading ? (
                   <>
@@ -288,22 +300,19 @@ export default function ProjectGuide() {
             </CardContent>
           </Card>
 
-          <div className="space-y-4">
+          <div className="space-y-4 ">
             {guide ? (
               <>
-                <h2 className="text-2xl font-bold text-white mb-4">
-                  Your Project Guide
-                </h2>
                 {sections.map((section) => (
                   <Card
                     key={section.key}
-                    className="bg-black/50 border-purple-500/30 backdrop-blur-sm"
+                    className="rounded-lg bg-black bg-gradient-to-r from-[#CFFFE2]/20 via-black to-[#CFFFE2]/20 backdrop-invert backdrop-opacity-10 shadow-inner inset-64 shadow-[#CFFFE2]/50 border-[#A2D5C6]"
                   >
                     <CardHeader
-                      className="cursor-pointer hover:bg-purple-900/20 transition-colors"
+                      className="cursor-pointer hover:bg-[#CFFFE2]/50 transition-colors"
                       onClick={() => toggleSection(section.key)}
                     >
-                      <CardTitle className="text-pink-400 flex items-center justify-between">
+                      <CardTitle className="text-[#CFFFE2] flex items-center justify-between">
                         <span className="flex items-center gap-2">
                           <span>{section.icon}</span>
                           {section.title}
@@ -321,10 +330,10 @@ export default function ProjectGuide() {
                           {guide[section.key as keyof ProjectGuide].map(
                             (item, index) => (
                               <div key={index} className="mb-3">
-                                <p className="font-semibold text-white text-lg">
+                                <p className="font-semibold text-[#CFFFE2] text-lg">
                                   {item["key"]}
                                 </p>
-                                <p className="text-pink-400">{item["value"]}</p>
+                                <p className="text-white">{item["value"]}</p>
                               </div>
                             )
                           )}
@@ -335,18 +344,18 @@ export default function ProjectGuide() {
                 ))}
               </>
             ) : (
-              <Card className="bg-black/50 border-purple-500/30 backdrop-blur-sm">
-                <CardContent className="text-center py-12">
-                  <Sparkles className="h-16 w-16 text-purple-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-white mb-2">
+              <div className="bg-black">
+                <div className="text-center py-24">
+                  <Sparkles className="h-16 w-16 text-[#A2D5C6] mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-[#F6F6F6] mb-2">
                     Ready to Generate Your Guide
                   </h3>
                   <p className="text-gray-400">
                     Fill out the form and click "Generate Project Guide" to get
                     started
                   </p>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             )}
           </div>
         </div>

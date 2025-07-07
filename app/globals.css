@@ -20,9 +20,9 @@
     --accent-foreground: 0 0% 98%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 271 91% 65% / 0.3;
+    --border: 156 39% 75%;
     --input: 271 91% 65% / 0.5;
-    --ring: 316 100% 74%;
+    --ring: 156 39% 75%;
     --radius: 0.75rem;
   }
 }
@@ -46,17 +46,17 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #ec4899, #8b5cf6);
+  background: linear-gradient(to bottom, #CFFFE2, #5aea94);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(to bottom, #db2777, #7c3aed);
+  background: linear-gradient(to bottom, #CFFFE2, #5aea94);
 }
 
 /* Gradient text effect */
 .gradient-text {
-  background: linear-gradient(45deg, #ec4899, #8b5cf6);
+  background: linear-gradient(45deg, #CFFFE2, #5aea94);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -76,7 +76,7 @@
 }
 
 .animated-gradient {
-  background: linear-gradient(-45deg, #000000, #4c1d95, #ec4899, #000000);
+  background: linear-gradient(-45deg,  #CFFFE2, #5aea94);
   background-size: 400% 400%;
   animation: gradient 15s ease infinite;
 }
