@@ -1,8 +1,34 @@
-import { parseJSON } from "date-fns";
-
 const OpenAI = require("openai");
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+import { NextRequest } from "next/server";
 require("dotenv").config();
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const ratelimit = new Ratelimit({
+    redis: Redis.fromEnv(),
+    limiter: Ratelimit.slidingWindow(10, "30 d"),
+    analytics: true,
+    prefix: "@upstash/ratelimit",
+  });
+  // Get client IP
+  const forwardedFor = req.headers.get("x-forwarded-for");
+  const realIp = req.headers.get("x-real-ip");
+  const ip = forwardedFor?.split(",")[0] || realIp || "127.0.0.1";
+  const { success, limit, remaining, reset } = await ratelimit.limit(ip);
+
+  if (!success) {
+    console.log("Rate limit exceeded for IP:", ip);
+    return Response.json(
+      {
+        reset: new Date(reset).toISOString(),
+        error: "Rate limit exceeded. Please try again!",
+        limit,
+        remaining,
+        
+      },
+      { status: 429 }
+    );
+  }
   try {
     const {
       projectIdea,
@@ -61,7 +87,6 @@ export async function POST(req: Request) {
     Make sure each section is comprehensive and tailored to the user's technical level and requirements.
     Also give code examples where applicable, especially in the 'initialSetupSteps' and 'implementationStrategy' sections.
     Ensure the response is well-structured and easy to follow.
-    The response should be in JSON format only, without any additional text or markdown formatting.
     `;
     const client = new OpenAI({
       baseURL: "https://api.studio.nebius.com/v1/",
@@ -78,17 +103,38 @@ export async function POST(req: Request) {
         },
       ],
     });
-    console.log(completion);
+    // console.log(completion);
     try {
       const result = await JSON.parse(completion.choices[0].message.content);
-      console.log("Parsed result:", result);
-      return Response.json(result, { status: 200 });
+      // console.log("Parsed result:", result);
+      return Response.json({result, remaining},{ status: 200 });
     } catch (parseError) {
-      console.log("Error parsing response:", parseError);
-      return Response.json(
-        { error: "Failed to parse response from AI model." },
-        { status: 500 }
-      );
+      console.error("JSON parsing error:", parseError);
+      console.log("Raw AI response:", completion.choices[0].message.content);
+
+      let cleanContent = completion.choices[0].message.content;
+
+      cleanContent = cleanContent
+        .replace(/```json\n?/g, "")
+        .replace(/```\n?/g, "");
+
+      const firstBrace = cleanContent.indexOf("{");
+      const lastBrace = cleanContent.lastIndexOf("}");
+
+      if (firstBrace !== -1 && lastBrace !== -1) {
+        cleanContent = cleanContent.substring(firstBrace, lastBrace + 1);
+
+        try {
+          const result = JSON.parse(cleanContent);
+          console.log("Successfully parsed cleaned JSON response");
+          return Response.json({ result, remaining }, { status: 200 });
+        } catch (secondParseError) {
+          console.error(
+            "Second JSON parsing attempt failed:",
+            secondParseError
+          );
+        }
+      }
     }
   } catch (error) {
     console.error("Error generating guide:", error);
