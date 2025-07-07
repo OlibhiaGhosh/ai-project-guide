@@ -123,11 +123,11 @@ export default function ProjectGuide() {
     <div className=" min-h-screen bg-black text-[#F6F6F6] font-geist-mono">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-[#F6F6F6] mb-4 flex items-center justify-center gap-2">
+          <h1 className="text-4xl font-bold text-[#F6F6F6] mb-4 flex items-center justify-center gap-2 max-sm:text-3xl">
             <p className="text-[#9af1ba]">Project</p>{" "}
             <p className="text-[#9af1ba]">Guide</p> Generator
           </h1>
-          <p className="text-gray-300 text-lg">
+          <p className="text-gray-300 text-lg max-sm:text-md">
             Get AI-powered guidance to bring your project ideas to life
           </p>
         </div>
