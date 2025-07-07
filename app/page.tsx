@@ -120,13 +120,11 @@ export default function ProjectGuide() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-purple-900 to-pink-900">
+    <div className="min-h-screen bg-black text-white font-serif">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-4 flex items-center justify-center gap-2">
-            <Sparkles className="text-pink-400" />
-            Project Guide Generator
-            <Sparkles className="text-purple-400" />
+            <p className="text-[#e18fe3]">Project</p> <p className="text-[#b83ce8]">Guide</p> Generator
           </h1>
           <p className="text-gray-300 text-lg">
             Get AI-powered guidance to bring your project ideas to life
@@ -135,7 +133,7 @@ export default function ProjectGuide() {
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Input Form */}
-          <Card className="bg-black/50 border-purple-500/30 backdrop-blur-sm">
+          <Card className="h-max bg-gradient-to-br from-black to-[#b83ce8] border-purple-500/30 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="text-pink-400 text-xl">
                 Project Details
@@ -143,7 +141,7 @@ export default function ProjectGuide() {
             </CardHeader>
             <CardContent className="space-y-6" suppressHydrationWarning={true}>
               <div>
-                <label className="block text-purple-300 font-medium mb-2">
+                <label className="block text-white font-medium mb-2">
                   Project Idea (Required)
                 </label>
                 <Textarea
@@ -160,7 +158,7 @@ export default function ProjectGuide() {
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-purple-300 font-medium mb-2">
+                  <label className="block text-white font-medium mb-2">
                     Application Type
                   </label>
                   <Select
@@ -183,7 +181,7 @@ export default function ProjectGuide() {
                 </div>
 
                 <div>
-                  <label className="block text-purple-300 font-medium mb-2">
+                  <label className="block text-white font-medium mb-2">
                     Development Type
                   </label>
                   <Select
@@ -267,7 +265,7 @@ export default function ProjectGuide() {
                   !formData.projectIdea.trim() ||
                   !formData.technicalLevel
                 }
-                className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-semibold py-3"
+                className="w-full bg-gradient-to-r from-pink-300 to-pink-400 hover:from-pink-600 hover:to-purple-700 text-blue-950 font-semibold py-3"
               >
                 {loading ? (
                   <>
