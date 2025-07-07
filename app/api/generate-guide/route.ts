@@ -3,6 +3,53 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { NextRequest } from "next/server";
 require("dotenv").config();
+function safeJsonParse(jsonString: string) {
+  try {
+    return JSON.parse(jsonString);
+  } catch (error) {
+    console.log("Direct JSON parsing failed, attempting to clean...");
+    
+    let cleaned = jsonString
+      // Remove markdown code blocks
+      .replace(/```json\n?/g, "")
+      .replace(/```\n?/g, "")
+      // Replace unescaped newlines in strings with escaped newlines
+      .replace(/(?<!\\)\n/g, "\\n")
+      // Replace unescaped tabs with escaped tabs
+      .replace(/(?<!\\)\t/g, "\\t")
+      // Replace unescaped carriage returns with escaped carriage returns
+      .replace(/(?<!\\)\r/g, "\\r")
+      // Replace unescaped backslashes (but not already escaped ones)
+      .replace(/(?<!\\)\\(?![\\"/bfnrt])/g, "\\\\")
+      // Fix any remaining control characters
+      .replace(/[\x00-\x1F\x7F]/g, "");
+
+    // Extract JSON from the cleaned string
+    const firstBrace = cleaned.indexOf("{");
+    const lastBrace = cleaned.lastIndexOf("}");
+    
+    if (firstBrace !== -1 && lastBrace !== -1) {
+      cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+    }
+
+    try {
+      return JSON.parse(cleaned);
+    } catch (secondError) {
+      console.log("Second parsing attempt failed, trying more aggressive cleaning...");
+      
+      // More aggressive cleaning - escape all quotes within string values
+      let aggressiveCleaned = cleaned
+        // Fix unescaped quotes in string values
+        .replace(/"([^"\\]*(\\.[^"\\]*)*)"(\s*:\s*"[^"]*"[^"]*)"([^"\\]*(\\.[^"\\]*)*)"(\s*[,}])/g, 
+                 '"$1"$3\\"$4\\"$5$6')
+        // Remove any remaining problematic characters
+        .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+
+      return JSON.parse(aggressiveCleaned);
+    }
+  }
+}
+
 export async function POST(req: NextRequest) {
   const ratelimit = new Ratelimit({
     redis: Redis.fromEnv(),
@@ -87,6 +134,9 @@ export async function POST(req: NextRequest) {
     Make sure each section is comprehensive and tailored to the user's technical level and requirements.
     Also give code examples where applicable, especially in the 'initialSetupSteps' and 'implementationStrategy' sections.
     Ensure the response is well-structured and easy to follow.
+    while gining the response, make sure to use the following format: Give a solely json response without any explanation or additional text. Just give the JSON response without any extra word outside this format.
+    Remove any extra markdown formatting.
+    Make sure to provide a detailed and comprehensive guide that covers all aspects of the project.
     `;
     const client = new OpenAI({
       baseURL: "https://api.studio.nebius.com/v1/",
@@ -105,38 +155,15 @@ export async function POST(req: NextRequest) {
     });
     // console.log(completion);
     try {
-      const result = await JSON.parse(completion.choices[0].message.content);
-      // console.log("Parsed result:", result);
+      const result = await safeJsonParse(completion.choices[0].message.content);
+      console.log("Parsed result:", result);
       return Response.json({result, remaining},{ status: 200 });
     } catch (parseError) {
       console.error("JSON parsing error:", parseError);
       console.log("Raw AI response:", completion.choices[0].message.content);
-
-      let cleanContent = completion.choices[0].message.content;
-
-      cleanContent = cleanContent
-        .replace(/```json\n?/g, "")
-        .replace(/```\n?/g, "");
-
-      const firstBrace = cleanContent.indexOf("{");
-      const lastBrace = cleanContent.lastIndexOf("}");
-
-      if (firstBrace !== -1 && lastBrace !== -1) {
-        cleanContent = cleanContent.substring(firstBrace, lastBrace + 1);
-
-        try {
-          const result = JSON.parse(cleanContent);
-          console.log("Successfully parsed cleaned JSON response");
-          return Response.json({ result, remaining }, { status: 200 });
-        } catch (secondParseError) {
-          console.error(
-            "Second JSON parsing attempt failed:",
-            secondParseError
-          );
-        }
       }
     }
-  } catch (error) {
+    catch (error) {
     console.error("Error generating guide:", error);
     return Response.json(
       { error: "Failed to generate project guide. Please try again." },

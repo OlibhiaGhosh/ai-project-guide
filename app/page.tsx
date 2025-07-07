@@ -100,6 +100,7 @@ export default function ProjectGuide() {
           ? error.message
           : "Failed to generate project guide. Please try again."
       );
+      setRemaining(remaining);
     } finally {
       setLoading(false);
     }
@@ -140,7 +141,7 @@ export default function ProjectGuide() {
                 Project Details
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6" suppressHydrationWarning={true}>
               <div>
                 <label className="block text-purple-300 font-medium mb-2">
                   Project Idea (Required)
@@ -153,6 +154,7 @@ export default function ProjectGuide() {
                   }
                   className="bg-black/30 border-purple-400/50 text-white placeholder-gray-400 focus:border-pink-400"
                   rows={4}
+                  suppressHydrationWarning={true}
                 />
               </div>
 
@@ -166,7 +168,7 @@ export default function ProjectGuide() {
                       handleInputChange("applicationType", value)
                     }
                   >
-                    <SelectTrigger className="bg-black/30 border-purple-400/50 text-white">
+                    <SelectTrigger className="bg-black/30 border-purple-400/50 text-white" suppressHydrationWarning={true}>
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent className="bg-black border-purple-400/50">
@@ -189,7 +191,7 @@ export default function ProjectGuide() {
                       handleInputChange("developmentType", value)
                     }
                   >
-                    <SelectTrigger className="bg-black/30 border-purple-400/50 text-white">
+                    <SelectTrigger className="bg-black/30 border-purple-400/50 text-white" suppressHydrationWarning={true}>
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent className="bg-black border-purple-400/50">
@@ -210,7 +212,7 @@ export default function ProjectGuide() {
                     handleInputChange("technicalLevel", value)
                   }
                 >
-                  <SelectTrigger className="bg-black/30 border-purple-400/50 text-white">
+                  <SelectTrigger className="bg-black/30 border-purple-400/50 text-white" suppressHydrationWarning={true}>
                     <SelectValue placeholder="Select your level" />
                   </SelectTrigger>
                   <SelectContent className="bg-black border-purple-400/50">
@@ -232,6 +234,7 @@ export default function ProjectGuide() {
                     handleInputChange("preferredTechStack", e.target.value)
                   }
                   className="bg-black/30 border-purple-400/50 text-white placeholder-gray-400 focus:border-pink-400"
+                  suppressHydrationWarning={true}
                 />
               </div>
 
@@ -247,6 +250,7 @@ export default function ProjectGuide() {
                   }
                   className="bg-black/30 border-purple-400/50 text-white placeholder-gray-400 focus:border-pink-400"
                   rows={3}
+                  suppressHydrationWarning={true}
                 />
               </div>
 
