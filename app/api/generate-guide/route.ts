@@ -1,4 +1,4 @@
-const OpenAI = require("openai");
+import OpenAI from "openai"
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { NextRequest } from "next/server";
@@ -138,12 +138,13 @@ export async function POST(req: NextRequest) {
     Remove any extra markdown formatting.
     Make sure to provide a detailed and comprehensive guide that covers all aspects of the project.
     `;
+    try {
     const client = new OpenAI({
       baseURL: "https://api.studio.nebius.com/v1/",
       apiKey: process.env.NEBIUS_API_KEY,
     });
 
-    let completion = await client.chat.completions.create({
+    const completion = await client.chat.completions.create({
       temperature: 0.6,
       model: "meta-llama/Meta-Llama-3.1-70B-Instruct",
       messages: [
@@ -154,13 +155,12 @@ export async function POST(req: NextRequest) {
       ],
     });
     // console.log(completion);
-    try {
-      const result = await safeJsonParse(completion.choices[0].message.content);
+      console.log("Raw AI response:", completion.choices[0].message.content);
+      const result = await safeJsonParse(completion?.choices[0]?.message?.content ?? "");
       console.log("Parsed result:", result);
       return Response.json({result, remaining},{ status: 200 });
     } catch (parseError) {
       console.error("JSON parsing error:", parseError);
-      console.log("Raw AI response:", completion.choices[0].message.content);
       }
     }
     catch (error) {
